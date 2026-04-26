@@ -1,0 +1,62 @@
+services:
+  app:
+    build: .
+    container_name: aisupportticket-app
+    restart: always
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - AI_API_KEY=${AI_API_KEY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - aisupportticket-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: aisupportticket-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: ai_ticket
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+      - aisupportticket-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    networks:
+      - aisupportticket-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: aisupportticket-redis
+    restart: always
+    ports:
+      - "16379:6379"
+    volumes:
+      - aisupportticket-redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - aisupportticket-network
+
+volumes:
+  aisupportticket-mysql-data:
+    name: aisupportticket-mysql-data
+  aisupportticket-redis-data:
+    name: aisupportticket-redis-data
+
+networks:
+  aisupportticket-network:
+    name: aisupportticket-network

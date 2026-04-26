@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: ai-support-ticket
+  
+  datasource:
+    url: jdbc:mysql://localhost:13306/ai_ticket?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  
+  data:
+    redis:
+      host: localhost
+      port: 16379
+      timeout: 5000ms
+      redisson:
+        config: |
+          singleServerConfig:
+            address: "redis://localhost:16379"
+            connectionPoolSize: 10
+            connectionMinimumIdleSize: 5
+            idleConnectionTimeout: 10000
+            connectTimeout: 10000
+            timeout: 3000
+            retryAttempts: 3
+            retryInterval: 1500
+          threads: 4
+          nettyThreads: 4
+          codec: !<org.redisson.codec.StringCodec> {}
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  
+  ai:
+    dashscope:
+      api-key: ${AI_API_KEY:}
+      chat:
+        options:
+          model: qwen-max
+          temperature: 0.7
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.example.aisupportticket.infrastructure.persistence.po
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      table-prefix: t_
+
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+logging:
+  level:
+    root: INFO
+    com.example.aisupportticket: DEBUG
+
+rate-limit:
+  chat:
+    limit: 100
+    window: 60
+  ticket:
+    create-limit: 10
+    dedup-expire: 300
