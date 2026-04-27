@@ -23,10 +23,11 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class TicketLogRepositoryImpl implements TicketLogRepository {
-    
+
     private final TicketLogMapper ticketLogMapper;
     private final TicketLogConverter ticketLogConverter;
-    
+
+    //保存工单日志（新增或更新）
     @Override
     public TicketLog save(TicketLog ticketLog) {
         TicketLogPO po = ticketLogConverter.toPO(ticketLog);
@@ -38,7 +39,8 @@ public class TicketLogRepositoryImpl implements TicketLogRepository {
         }
         return ticketLog;
     }
-    
+
+    //根据工单ID查询所有日志列表
     @Override
     public List<TicketLog> findByTicketId(Long ticketId) {
         LambdaQueryWrapper<TicketLogPO> wrapper = new LambdaQueryWrapper<>();

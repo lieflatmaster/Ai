@@ -18,8 +18,10 @@ import reactor.core.publisher.Flux;
 @Component
 @RequiredArgsConstructor
 public class AiClient {
-    
+
+    // DashScope Chat模型
     private final DashScopeChatModel chatModel;
+    //工具
     private final TicketTools ticketTools;
     
     /**
