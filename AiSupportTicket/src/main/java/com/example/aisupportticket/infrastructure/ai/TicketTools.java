@@ -97,7 +97,7 @@ public class TicketTools {
     @Tool(description = "查询用户的工单列表。当用户想查看自己的所有工单或按状态筛选工单时调用此函数。")
     public String listTickets(
             @ToolParam(description = "页码，默认1") Integer page,
-            @ToolParam(description = "每页数量，默认10") Integer size,
+            @ToolParam(description = "每页数量，默认50") Integer size,
             @ToolParam(description = "状态筛选：PENDING(待处理), PROCESSING(处理中), RESOLVED(已解决), CLOSED(已关闭)，可选") String status) {
         long startTime = System.currentTimeMillis();
         log.info("---------- [Tool] listTickets 开始 ----------");
